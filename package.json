@@ -1,0 +1,38 @@
+{
+  "name": "tiny-fast-glob-monorepo",
+  "type": "module",
+  "scripts": {
+    "prepare": "simple-git-hooks",
+    "bench": "vitest bench --run",
+    "build": "tsup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plumbiu/tiny-fast-glob.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Plumbiu/tiny-fast-glob/issues"
+  },
+  "homepage": "https://github.com/Plumbiu/tiny-fast-glob#readme",
+  "keywords": [],
+  "author": "Plumbiu",
+  "license": "MIT",
+  "devDependencies": {
+    "@plumbiu/eslint-config": "^0.1.10",
+    "@types/node": "^20.9.2",
+    "eslint": "^8.54.0",
+    "fast-glob": "^3.3.2",
+    "simple-git-hooks": "^2.9.0",
+    "tiny-fast-glob": "workspace:^",
+    "tsup": "^8.0.0",
+    "vitest": "^0.34.6"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "**/*.{tsx,ts}": [
+      "eslint"
+    ]
+  }
+}
