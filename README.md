@@ -1,10 +1,12 @@
 # tiny-fast-glob
 
-The simplest glob method implementation. 8x faster than fast-glob.
+The simplest glob method implementation. 4x faster than fast-glob.
+
+> only Support Node.js version > v20.1.0
 
 # Feature
 
-- ⚡️8x faster than fast-glob globSync method.
+- ⚡️4x faster than fast-glob globSync method.
 - 📦Super lightweight.
 
 # Install

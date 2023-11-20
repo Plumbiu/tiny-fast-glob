@@ -1,6 +1,6 @@
 {
   "name": "tiny-fast-glob",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Only glob(Sync) method, tiny and fast.",
   "main": "dist/index.js",
   "type": "module",

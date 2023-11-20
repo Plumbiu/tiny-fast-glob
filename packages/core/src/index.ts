@@ -45,11 +45,3 @@ export function glob(pattern: string, options: Options = {}) {
 
   return absolute ? result : result.map((item) => path.relative(cwd, item))
 }
-
-console.log(
-  glob('**/.env*', {
-    cwd: 'D:\\Code\\Project\\@plumbiu\\blog',
-    absolute: true,
-    ignore: ['**/node_modules/**', '**/dist/**'],
-  }),
-)
