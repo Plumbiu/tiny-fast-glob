@@ -4,6 +4,7 @@
   "scripts": {
     "prepare": "simple-git-hooks",
     "bench": "vitest bench --run",
+    "test": "vitest",
     "build": "tsup"
   },
   "repository": {
