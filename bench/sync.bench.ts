@@ -1,11 +1,11 @@
 import { bench } from 'vitest'
-import { glob as fast_glob } from 'fast-glob'
-import { glob as tiny_fast_glob } from 'tiny-fast-glob'
+import { globSync as fast_glob } from 'fast-glob'
+import { globSync as tiny_fast_glob } from 'tiny-fast-glob'
 
 bench(
   'fast-glob',
-  async () => {
-    await fast_glob('**/*.ts', {
+  () => {
+    fast_glob('**/*.ts', {
       ignore: ['**/node_modules'],
       absolute: true,
     })
@@ -14,8 +14,8 @@ bench(
 )
 bench(
   'tiny-fast-glob',
-  async () => {
-    await tiny_fast_glob('**/*.ts', {
+  () => {
+    tiny_fast_glob('**/*.ts', {
       ignore: ['**/node_modules'],
       absolute: true,
     })
