@@ -10,7 +10,7 @@ bench(
       absolute: true,
     })
   },
-  { time: 50 },
+  { time: 250 },
 )
 bench(
   'tiny-fast-glob',
@@ -20,5 +20,5 @@ bench(
       absolute: true,
     })
   },
-  { time: 50 },
+  { time: 250 },
 )
