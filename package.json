@@ -1,5 +1,5 @@
 {
-  "name": "tiny-fast-glob-monorepo",
+  "name": "tiny-fast-glob",
   "type": "module",
   "version": "0.1.0",
   "scripts": {
