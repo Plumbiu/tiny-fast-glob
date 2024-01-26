@@ -1,6 +1,7 @@
 {
   "name": "tiny-fast-glob-monorepo",
   "type": "module",
+  "version": "0.1.0",
   "scripts": {
     "prepare": "simple-git-hooks",
     "bench": "vitest bench --run",
