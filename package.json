@@ -19,14 +19,15 @@
   "author": "Plumbiu",
   "license": "MIT",
   "devDependencies": {
-    "@plumbiu/eslint-config": "^0.1.10",
-    "@types/node": "^20.9.2",
-    "eslint": "^8.54.0",
+    "@plumbiu/eslint-config": "^0.2.0",
+    "@types/micromatch": "^4.0.6",
+    "@types/node": "^20.11.6",
+    "eslint": "^8.56.0",
     "fast-glob": "^3.3.2",
+    "micromatch": "^4.0.5",
     "simple-git-hooks": "^2.9.0",
-    "tiny-fast-glob": "workspace:^",
-    "tsup": "^8.0.0",
-    "vitest": "^0.34.6"
+    "tsup": "^8.0.1",
+    "vitest": "^1.2.1"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

@@ -1,8 +1,8 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['packages/core/src/index.ts'],
-  outDir: 'packages/core/dist',
+  entry: ['src/index.ts'],
+  outDir: 'dist',
   splitting: true,
   clean: true,
   format: ['esm', 'cjs'],
