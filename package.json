@@ -1,7 +1,7 @@
 {
   "name": "tiny-fast-glob",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "scripts": {
     "bench": "vitest bench --run",
     "test": "vitest",
@@ -33,13 +33,15 @@
   "keywords": [],
   "author": "Plumbiu",
   "license": "MIT",
+  "dependencies": {
+    "micromatch": "^4.0.5"
+  },
   "devDependencies": {
     "@plumbiu/eslint-config": "^0.2.0",
     "@types/micromatch": "^4.0.6",
     "@types/node": "^20.0.0",
     "eslint": "^8.56.0",
     "fast-glob": "^3.3.2",
-    "micromatch": "^4.0.5",
     "tiny-glob": "^0.2.9",
     "tsup": "^8.0.1",
     "vitest": "^1.2.1"
