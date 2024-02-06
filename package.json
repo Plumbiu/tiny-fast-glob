@@ -1,7 +1,7 @@
 {
   "name": "tiny-fast-glob",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "prepare": "simple-git-hooks",
     "bench": "vitest bench --run",
@@ -37,11 +37,12 @@
   "devDependencies": {
     "@plumbiu/eslint-config": "^0.2.0",
     "@types/micromatch": "^4.0.6",
-    "@types/node": "^20.11.6",
+    "@types/node": "^20.0.0",
     "eslint": "^8.56.0",
     "fast-glob": "^3.3.2",
     "micromatch": "^4.0.5",
     "simple-git-hooks": "^2.9.0",
+    "tiny-glob": "^0.2.9",
     "tsup": "^8.0.1",
     "vitest": "^1.2.1"
   },

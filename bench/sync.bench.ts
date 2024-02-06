@@ -8,6 +8,7 @@ bench(
     fast_glob('**/*.ts', {
       ignore: ['**/node_modules'],
       absolute: true,
+      followSymbolicLinks: false,
     })
   },
   { time: 250 },
