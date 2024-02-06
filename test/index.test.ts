@@ -15,3 +15,16 @@ test('equal with fast-glob', async () => {
 
   expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
 })
+
+test('absolute-true', async () => {
+  const r1 = await fast_glob('**/*.ts', {
+    followSymbolicLinks: false,
+    absolute: true,
+  })
+
+  const r2 = await tiny_fast_glob('**/*.ts', {
+    absolute: true,
+  })
+
+  expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
+})

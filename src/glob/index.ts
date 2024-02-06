@@ -34,7 +34,7 @@ export function globSync(pattern: string, options: Options = {}) {
           })
           _glob(full, newDirs)
         }
-      } else if (match.isMatch(item.name, pattern)) {
+      } else if (match.isMatch(full, pattern)) {
         result.push(full)
       }
     }
@@ -51,9 +51,12 @@ export async function glob(pattern: string, options: Options = {}) {
     dot = false,
   } = options
   const result: string[] = []
-  const root = await fsp.readdir(cwd, { withFileTypes: true })
-  await _glob(cwd, root)
-
+  try {
+    const root = await fsp.readdir(cwd, { withFileTypes: true })
+    await _glob(cwd, root)
+  } catch (error) {
+    return []
+  }
   async function _glob(p: string, dirs: fs.Dirent[]) {
     await Promise.all(
       dirs.map(async (item) => {
@@ -63,10 +66,12 @@ export async function glob(pattern: string, options: Options = {}) {
         const full = path.join(p, item.name)
         if (item.isDirectory()) {
           if (!match.isMatch(full, ignore)) {
-            const newDirs = await fsp.readdir(full, {
-              withFileTypes: true,
-            })
-            await _glob(full, newDirs)
+            try {
+              const newDirs = await fsp.readdir(full, {
+                withFileTypes: true,
+              })
+              await _glob(full, newDirs)
+            } catch (error) {}
           }
         } else if (match.isMatch(item.name, pattern)) {
           result.push(full)

@@ -26,9 +26,6 @@ importers:
       micromatch:
         specifier: ^4.0.5
         version: 4.0.5
-      simple-git-hooks:
-        specifier: ^2.9.0
-        version: 2.9.0
       tiny-glob:
         specifier: ^0.2.9
         version: 0.2.9
@@ -2556,12 +2553,6 @@ packages:
   /signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
-    dev: true
-
-  /simple-git-hooks@2.9.0:
-    resolution: {integrity: sha512-waSQ5paUQtyGC0ZxlHmcMmD9I1rRXauikBwX31bX58l5vTOhCEcBC5Bi+ZDkPXTjDnZAF8TbCqKBY+9+sVPScw==}
-    hasBin: true
-    requiresBuild: true
     dev: true
 
   /slash@3.0.0:

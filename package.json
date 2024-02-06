@@ -3,7 +3,6 @@
   "type": "module",
   "version": "0.1.1",
   "scripts": {
-    "prepare": "simple-git-hooks",
     "bench": "vitest bench --run",
     "test": "vitest",
     "build": "tsup"
@@ -41,17 +40,8 @@
     "eslint": "^8.56.0",
     "fast-glob": "^3.3.2",
     "micromatch": "^4.0.5",
-    "simple-git-hooks": "^2.9.0",
     "tiny-glob": "^0.2.9",
     "tsup": "^8.0.1",
     "vitest": "^1.2.1"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
-  },
-  "lint-staged": {
-    "**/*.{tsx,ts}": [
-      "eslint"
-    ]
   }
 }

@@ -12,5 +12,4 @@ export default defineConfig({
   bundle: true,
   minify: true,
   dts: true,
-  sourcemap: true,
 })
