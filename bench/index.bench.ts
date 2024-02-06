@@ -6,7 +6,7 @@ import { glob as tiny_fast_glob } from '../src/index'
 bench(
   'fast-glob',
   async () => {
-    await fast_glob('**/*.ts', {
+    await fast_glob('**/*.js', {
       absolute: true,
       followSymbolicLinks: false,
     })
@@ -16,7 +16,7 @@ bench(
 bench(
   'tiny-glob',
   async () => {
-    await tiny_glob('**/*.ts', {
+    await tiny_glob('**/*.js', {
       absolute: true,
       filesOnly: true,
     })
@@ -27,7 +27,7 @@ bench(
 bench(
   'tiny-fast-glob',
   async () => {
-    await tiny_fast_glob('**/*.ts', {
+    await tiny_fast_glob('**/*.js', {
       absolute: true,
     })
   },

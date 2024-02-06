@@ -5,7 +5,7 @@ import { globSync as tiny_fast_glob } from '../src/index'
 bench(
   'fast-glob',
   () => {
-    fast_glob('**/*.ts', {
+    fast_glob('**/*.js', {
       ignore: ['**/node_modules'],
       absolute: true,
       followSymbolicLinks: false,
@@ -16,7 +16,7 @@ bench(
 bench(
   'tiny-fast-glob',
   () => {
-    tiny_fast_glob('**/*.ts', {
+    tiny_fast_glob('**/*.js', {
       ignore: ['**/node_modules'],
       absolute: true,
     })

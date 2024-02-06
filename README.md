@@ -4,7 +4,7 @@ The simplest glob method implementation. 4x faster than fast-glob.
 
 # Feature
 
-- ⚡️104x faster than fast-glob and 12x faster than tiny-glob
+- ⚡️163x faster than fast-glob and 18x faster than tiny-glob
 - 📦Super lightweight.
 
 # Install
@@ -18,25 +18,24 @@ npm install tiny-fast-glob
 One of reason of `tiny-fast-glob` is faster is that it **doesn't fully support all `fast-glob` or `glob` options**.
 
 ```
- ✓ bench/sync.bench.ts (2) 712ms
-     name                  hz     min     max    mean     p75     p99    p995    p999     rme  samples
-   · fast-glob         560.51  1.3619  3.4350  1.7841  1.8847  3.1143  3.4350  3.4350  ±2.41%      141
-   · tiny-fast-glob  6,295.21  0.1354  1.4159  0.1589  0.1558  0.3050  1.0000  1.1672  ±2.52%     1574   fastest     
- ✓ bench/index.bench.ts (3) 1130ms
-     name                  hz      min      max     mean      p75      p99     p995     p999     rme  samples        
-   · fast-glob        47.0826  18.8528  25.7455  21.2393  22.4356  25.7455  25.7455  25.7455  ±6.19%       12   slowest
-   · tiny-glob         405.32   2.0141   4.0439   2.4672   2.5722   3.8883   4.0439   4.0439  ±2.98%      102        
-   · tiny-fast-glob  4,926.93   0.1758   1.1747   0.2030   0.1869   0.8592   0.9626   1.1445  ±2.65%     1232   fastest
+     name                  hz      min      max     mean      p75      p99     p995     p999      rme  samples   
+   · fast-glob        29.3216  28.2441  46.8544  34.1045  35.6849  46.8544  46.8544  46.8544  ±11.41%       10   slowest
+   · tiny-glob         254.74   2.8719   8.0102   3.9255   4.1661   8.0102   8.0102   8.0102   ±7.05%       64   
+   · tiny-fast-glob  4,790.79   0.1781   0.5550   0.2087   0.2075   0.4104   0.4621   0.5388   ±1.33%     1198   fastest
+ ✓ bench/sync.bench.ts (2) 723ms
+     name                  hz     min      max    mean     p75      p99     p995     p999      rme  samples      
+   · fast-glob         162.02  3.0518  14.2443  6.1721  7.6617  14.2443  14.2443  14.2443  ±14.20%       41      
+   · tiny-fast-glob  4,095.53  0.1575   1.3712  0.2442  0.2508   0.6482   1.1174   1.3439   ±2.96%     1024   fastest
 
 
  BENCH  Summary
 
   tiny-fast-glob - bench/index.bench.ts > 
-    12.16x faster than tiny-glob
-    104.64x faster than fast-glob
+    18.81x faster than tiny-glob
+    163.39x faster than fast-glob
 
   tiny-fast-glob - bench/sync.bench.ts > 
-    11.23x faster than fast-glob
+    25.28x faster than fast-glob
 ```
 
 Currently supported options:
