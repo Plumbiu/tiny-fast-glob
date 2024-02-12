@@ -11,12 +11,7 @@ interface Options {
 }
 
 export function globSync(pattern: string, options: Options = {}) {
-  const {
-    cwd = process.cwd(),
-    ignore = [],
-    absolute = false,
-    dot = false,
-  } = options
+  const { cwd = '.', ignore = [], absolute = false, dot = false } = options
   const result: string[] = []
   const root = fs.readdirSync(cwd, { withFileTypes: true })
   _glob(cwd, root)
@@ -40,16 +35,13 @@ export function globSync(pattern: string, options: Options = {}) {
     }
   }
 
-  return absolute ? result : result.map((item) => path.relative(cwd, item))
+  return absolute
+    ? result.map((item) => path.join(process.cwd(), item))
+    : result
 }
 
 export async function glob(pattern: string, options: Options = {}) {
-  const {
-    cwd = process.cwd(),
-    ignore = [],
-    absolute = false,
-    dot = false,
-  } = options
+  const { cwd = '.', ignore = [], absolute = false, dot = false } = options
   const result: string[] = []
   try {
     const root = await fsp.readdir(cwd, { withFileTypes: true })
@@ -73,11 +65,14 @@ export async function glob(pattern: string, options: Options = {}) {
               await _glob(full, newDirs)
             } catch (error) {}
           }
-        } else if (match.isMatch(item.name, pattern)) {
+        } else if (match.isMatch(full, pattern)) {
           result.push(full)
         }
       }),
     )
   }
-  return absolute ? result : result.map((item) => path.relative(cwd, item))
+
+  return absolute
+    ? result.map((item) => path.join(process.cwd(), item))
+    : result
 }
