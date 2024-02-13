@@ -30,7 +30,12 @@
     "url": "https://github.com/Plumbiu/tiny-fast-glob/issues"
   },
   "homepage": "https://github.com/Plumbiu/tiny-fast-glob#readme",
-  "keywords": [],
+  "keywords": [
+    "glob",
+    "match",
+    "fast",
+    "patterns"
+  ],
   "author": "Plumbiu",
   "license": "MIT",
   "dependencies": {
