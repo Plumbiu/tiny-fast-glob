@@ -1,10 +1,10 @@
 # tiny-fast-glob
 
-The simplest glob method implementation. 4x faster than fast-glob.
+The simplest and fastest glob method implementation.
 
 # Feature
 
-- ⚡️163x faster than fast-glob and 18x faster than tiny-glob
+- ⚡️Super fast(at least 15x faster than `fast-glob`)
 - 📦Super lightweight.
 
 # Install
@@ -13,34 +13,13 @@ The simplest glob method implementation. 4x faster than fast-glob.
 npm install tiny-fast-glob
 ```
 
-# Benchmark
-
-One of reason of `tiny-fast-glob` is faster is that it **doesn't fully support all `fast-glob` or `glob` options**.
-
-```
-     name                  hz      min      max     mean      p75      p99     p995     p999      rme  samples   
-   · fast-glob        29.3216  28.2441  46.8544  34.1045  35.6849  46.8544  46.8544  46.8544  ±11.41%       10   slowest
-   · tiny-glob         254.74   2.8719   8.0102   3.9255   4.1661   8.0102   8.0102   8.0102   ±7.05%       64   
-   · tiny-fast-glob  4,790.79   0.1781   0.5550   0.2087   0.2075   0.4104   0.4621   0.5388   ±1.33%     1198   fastest
- ✓ bench/sync.bench.ts (2) 723ms
-     name                  hz     min      max    mean     p75      p99     p995     p999      rme  samples      
-   · fast-glob         162.02  3.0518  14.2443  6.1721  7.6617  14.2443  14.2443  14.2443  ±14.20%       41      
-   · tiny-fast-glob  4,095.53  0.1575   1.3712  0.2442  0.2508   0.6482   1.1174   1.3439   ±2.96%     1024   fastest
-
-
- BENCH  Summary
-
-  tiny-fast-glob - bench/index.bench.ts > 
-    18.81x faster than tiny-glob
-    163.39x faster than fast-glob
-
-  tiny-fast-glob - bench/sync.bench.ts > 
-    25.28x faster than fast-glob
-```
-
-Currently supported options:
+# Usage
 
 ```ts
+import { glob } from 'tiny-fast-glob'
+await glob('**/*.js')
+
+// Currently supported options:
 interface Options {
   /**
    * @default ''
@@ -55,10 +34,53 @@ interface Options {
    */
   absolute?: boolean
   /**
-   * @default true
+   * @default false
    */
   dot?: boolean
+  /**
+   * @default false
+   */
+  followSymbolicLinks?: boolean
+  /**
+   * @default true
+   */
+  onlyFiles?: boolean
 }
+```
+
+# Benchmark
+
+One of reason of `tiny-fast-glob` is faster is that it **doesn't fully support all `fast-glob` or `glob` options**.
+
+```
+ ✓ bench/no-symbolic-links.bench.ts (3) 1263ms
+     name                  hz      min      max     mean      p75      p99     p995     p999      rme  samples
+   · fast-glob        30.2738  25.8322  41.9436  33.0319  36.6638  41.9436  41.9436  41.9436  ±10.80%       10   slowest
+   · tiny-glob         123.60   3.7879  16.6107   8.0909  10.5703  16.6107  16.6107  16.6107  ±14.08%       31
+   · tiny-fast-glob  2,442.43   0.1847   2.1506   0.4094   0.5230   1.3954   1.7333   2.1506   ±5.09%      612   fastest
+ ✓ bench/with-symbolic-link.bench.ts (2) 2407ms
+     name                hz     min     max    mean     p75     p99    p995    p999      rme  samples
+   · fast-glob       7.8442  112.41  164.37  127.48  144.64  164.37  164.37  164.37  ±10.37%       10
+   · tiny-fast-glob  125.08  7.6315  8.5867  7.9950  8.1491  8.5867  8.5867  8.5867   ±1.00%       32   fastest
+ ✓ bench/with-dir.bench.ts (3) 2829ms
+     name                hz     min     max    mean     p75     p99    p995    p999     rme  samples
+   · fast-glob       7.6325  119.60  154.73  131.02  145.87  154.73  154.73  154.73  ±7.83%       10   slowest
+   · tiny-glob       299.19  2.4323  5.1014  3.3423  3.7472  5.1014  5.1014  5.1014  ±4.09%       75   fastest
+   · tiny-fast-glob  122.21  7.7736  8.8636  8.1825  8.2722  8.8636  8.8636  8.8636  ±0.97%       31
+
+
+ BENCH  Summary
+
+  tiny-fast-glob - bench/no-symbolic-links.bench.ts >
+    19.76x faster than tiny-glob
+    80.68x faster than fast-glob
+
+  tiny-glob - bench/with-dir.bench.ts >
+    2.45x faster than tiny-fast-glob
+    39.20x faster than fast-glob
+
+  tiny-fast-glob - bench/with-symbolic-link.bench.ts >
+    15.95x faster than fast-glob
 ```
 
 # Related projects
