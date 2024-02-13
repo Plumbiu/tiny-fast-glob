@@ -10,6 +10,5 @@ export default defineConfig({
     compress: true,
   },
   bundle: true,
-  minify: true,
   dts: true,
 })
