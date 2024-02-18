@@ -132,13 +132,12 @@ test('**/*', async () => {
 })
 
 test('./', async () => {
-  const r1 = await fast_glob('./tsup/**/*.js', {
+  const r1 = await fast_glob(['./tsup/**/*.js', './eslint/**/*.js'], {
     cwd: 'node_modules',
-    followSymbolicLinks: false,
     onlyFiles: true,
   })
 
-  const r2 = await tiny_fast_glob('./tsup/**/*.js', {
+  const r2 = await tiny_fast_glob(['./tsup/**/*.js', './eslint/**/*.js'], {
     cwd: 'node_modules',
     followSymbolicLinks: true,
   })

@@ -12,7 +12,7 @@ interface Options {
   onlyFiles?: boolean
 }
 
-export async function glob(pattern: string | string[], options: Options = {}) {
+export async function glob(_pattern: string | string[], options: Options = {}) {
   const {
     cwd = '.',
     ignore = [],
@@ -21,17 +21,45 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     followSymbolicLinks = false,
     onlyFiles = true,
   } = options
-
+  const root = await fsp.readdir(cwd, { withFileTypes: true })
+  const judgeIgnore =
+    ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
   const result: string[] = []
+  const patterns = (typeof _pattern === 'string' ? [_pattern] : _pattern).map(
+    (item) => {
+      if (item[0] === '.' && item[1] === '/') {
+        return {
+          pattern: item,
+          startsAbsolte: true,
+        }
+      }
+      return {
+        pattern: item,
+        startsAbsolte: false,
+      }
+    },
+  )
+
+  await _glob(cwd, root)
+
   function m(p: string, pat: string | string[]) {
     return match.isMatch(p, pat, {
       dot,
     })
   }
-  const judgeIgnore =
-    ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
-  const root = await fsp.readdir(cwd, { withFileTypes: true })
-  await _glob(cwd, root)
+
+  function updateResult(p: string) {
+    for (const { pattern, startsAbsolte } of patterns) {
+      if (m(p, pattern)) {
+        if (startsAbsolte) {
+          result.push('./' + p)
+        } else {
+          result.push(p)
+        }
+      }
+    }
+  }
+
   async function _glob(p: string, dirs: fs.Dirent[]) {
     await Promise.all(
       dirs.map(async (item) => {
@@ -46,8 +74,8 @@ export async function glob(pattern: string | string[], options: Options = {}) {
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
           if (!judgeIgnore(patternPath)) {
-            if (!onlyFiles && m(patternPath, pattern)) {
-              result.push(patternPath)
+            if (!onlyFiles) {
+              updateResult(patternPath)
             }
             const newDirs = await fsp.readdir(full, {
               withFileTypes: true,
@@ -57,9 +85,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
           } else {
           }
         } else if (item.isFile()) {
-          if (m(patternPath, pattern)) {
-            result.push(patternPath)
-          }
+          updateResult(patternPath)
         }
       }),
     )
