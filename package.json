@@ -1,7 +1,7 @@
 {
   "name": "tiny-fast-glob",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "scripts": {
     "bench": "vitest bench --run",
     "test": "vitest",
