@@ -130,3 +130,18 @@ test('**/*', async () => {
 
   expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
 })
+
+test('./', async () => {
+  const r1 = await fast_glob('./tsup/**/*.js', {
+    cwd: 'node_modules',
+    followSymbolicLinks: false,
+    onlyFiles: true,
+  })
+
+  const r2 = await tiny_fast_glob('tsup/**/*.js', {
+    cwd: 'node_modules',
+    followSymbolicLinks: true,
+  })
+
+  expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
+})

@@ -28,36 +28,45 @@ export async function glob(pattern: string | string[], options: Options = {}) {
       dot,
     })
   }
+  const judgeIgnore =
+    ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
   const root = await fsp.readdir(cwd, { withFileTypes: true })
-  await _glob(cwd, root, '.')
 
-  async function _glob(p: string, dirs: fs.Dirent[], cmpedPath: string) {
+  await _glob(cwd, root)
+
+  async function _glob(p: string, dirs: fs.Dirent[]) {
     await Promise.all(
       dirs.map(async (item) => {
         if (!dot && item.name[0] === '.') {
           return
         }
         const full = path.join(p, item.name)
-        const matchPath = path.join(cmpedPath, item.name)
+        const patternPath = path.relative(cwd, full)
+
         if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
-          if (!m(matchPath, ignore)) {
-            if (!onlyFiles && m(matchPath, pattern)) {
-              result.push(matchPath)
+          if (!judgeIgnore(patternPath)) {
+            if (!onlyFiles && m(patternPath, pattern)) {
+              result.push(patternPath)
             }
             const newDirs = await fsp.readdir(full, {
               withFileTypes: true,
             })
-            await _glob(full, newDirs, matchPath)
+
+            await _glob(full, newDirs)
+          } else {
           }
-        } else if (item.isFile() && m(matchPath, pattern)) {
-          result.push(matchPath)
+        } else if (item.isFile()) {
+          if (m(patternPath, pattern)) {
+            result.push(patternPath)
+          }
         }
       }),
     )
   }
+
   return absolute
     ? result.map((item) => path.join(process.cwd(), item))
     : result
