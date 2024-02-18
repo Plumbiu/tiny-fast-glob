@@ -31,9 +31,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   const judgeIgnore =
     ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
   const root = await fsp.readdir(cwd, { withFileTypes: true })
-
   await _glob(cwd, root)
-
   async function _glob(p: string, dirs: fs.Dirent[]) {
     await Promise.all(
       dirs.map(async (item) => {
