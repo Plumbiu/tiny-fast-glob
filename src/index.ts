@@ -21,52 +21,43 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     followSymbolicLinks = false,
     onlyFiles = true,
   } = options
-  const result: string[] = []
-  try {
-    const root = await fsp.readdir(cwd, { withFileTypes: true })
-    await _glob(cwd, root)
-  } catch (error) {
-    return []
-  }
 
-  async function _glob(p: string, dirs: fs.Dirent[]) {
+  const result: string[] = []
+  function m(p: string, pat: string | string[]) {
+    return match.isMatch(p, pat, {
+      dot,
+    })
+  }
+  const root = await fsp.readdir(cwd, { withFileTypes: true })
+  await _glob(cwd, root, '.')
+
+  async function _glob(p: string, dirs: fs.Dirent[], cmpedPath: string) {
     await Promise.all(
       dirs.map(async (item) => {
         if (!dot && item.name[0] === '.') {
           return
         }
         const full = path.join(p, item.name)
+        const matchPath = path.join(cmpedPath, item.name)
         if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
-          if (!match.isMatch(full, ignore)) {
-            if (
-              !onlyFiles &&
-              match.isMatch(full, pattern, {
-                dot,
-              })
-            ) {
-              result.push(full)
+          if (!m(matchPath, ignore)) {
+            if (!onlyFiles && m(matchPath, pattern)) {
+              result.push(matchPath)
             }
-            try {
-              const newDirs = await fsp.readdir(full, {
-                withFileTypes: true,
-              })
-              await _glob(full, newDirs)
-            } catch (error) {}
+            const newDirs = await fsp.readdir(full, {
+              withFileTypes: true,
+            })
+            await _glob(full, newDirs, matchPath)
           }
-        } else if (
-          match.isMatch(full, pattern, {
-            dot,
-          })
-        ) {
-          result.push(full)
+        } else if (item.isFile() && m(matchPath, pattern)) {
+          result.push(matchPath)
         }
       }),
     )
   }
-
   return absolute
     ? result.map((item) => path.join(process.cwd(), item))
     : result

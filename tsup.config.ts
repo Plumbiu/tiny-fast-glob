@@ -6,9 +6,6 @@ export default defineConfig({
   splitting: true,
   clean: true,
   format: ['esm', 'cjs'],
-  terserOptions: {
-    compress: true,
-  },
   bundle: true,
   dts: true,
 })

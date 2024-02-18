@@ -4,12 +4,12 @@ import { glob as fast_glob } from 'fast-glob'
 import { glob as tiny_fast_glob } from '../src/index'
 
 test('simple', async () => {
-  const r1 = await fast_glob('src/**/*.js', {
+  const r1 = await fast_glob('src/**/*.ts', {
     followSymbolicLinks: false,
     absolute: true,
   })
 
-  const r2 = await tiny_fast_glob('src/**/*.js', {
+  const r2 = await tiny_fast_glob('src/**/*.ts', {
     absolute: true,
   })
 
@@ -112,6 +112,20 @@ test('dot', async () => {
     followSymbolicLinks: true,
     onlyFiles: false,
     dot: true,
+  })
+
+  expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
+})
+
+test('**/*', async () => {
+  const r1 = await fast_glob('**/*', {
+    cwd: 'node_modules',
+    followSymbolicLinks: false,
+    onlyFiles: true,
+  })
+
+  const r2 = await tiny_fast_glob('**/*', {
+    cwd: 'node_modules',
   })
 
   expect(r2.sort()).toEqual(r1.map((p) => path.normalize(p)).sort())
