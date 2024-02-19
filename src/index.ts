@@ -42,7 +42,8 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   function updateResult(patternPath: string, patterns: Pattern[]) {
     for (const { glob, base, prefix } of patterns) {
       if (match(patternPath, glob)) {
-        result.push(prefix + path.join(base, patternPath))
+        const suffix = path.join(base, patternPath)
+        result.push(prefix ? prefix + suffix : suffix)
       }
     }
   }
