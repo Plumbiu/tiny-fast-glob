@@ -12,7 +12,7 @@ interface Options {
   onlyFiles?: boolean
 }
 
-function ligealPath(str: string) {
+function isLegalPath(str: string) {
   for (const ch of str) {
     if (ch.length > 1) {
       return false
@@ -31,7 +31,7 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     onlyFiles = true,
   } = options
 
-  if (!ligealPath(cwd)) {
+  if (!isLegalPath(cwd)) {
     return []
   }
 
@@ -76,6 +76,9 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
         if (!dot && item.name[0] === '.') {
           return
         }
+        if (!isLegalPath(item.name)) {
+          return
+        }
         const full = path.join(p, item.name)
         const patternPath = path.relative(cwd, full)
 
@@ -87,14 +90,12 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
             if (!onlyFiles) {
               updateResult(patternPath)
             }
-            if (ligealPath(full)) {
-              try {
-                const newDirs = await fsp.readdir(full, {
-                  withFileTypes: true,
-                })
-                await _glob(full, newDirs)
-              } catch (error) {}
-            }
+            try {
+              const newDirs = await fsp.readdir(full, {
+                withFileTypes: true,
+              })
+              await _glob(full, newDirs)
+            } catch (error) {}
           }
         } else if (item.isFile()) {
           updateResult(patternPath)
