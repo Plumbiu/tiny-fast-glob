@@ -171,3 +171,21 @@ test('**/* by ignore', async () => {
 
   expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
+
+test('test', async () => {
+  const r1 = await fast_glob('./fast-glob/*', {
+    cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
+    followSymbolicLinks: false,
+    onlyFiles: true,
+    absolute: true,
+  })
+
+  const r2 = await tiny_fast_glob('./fast-glob/*', {
+    absolute: true,
+    cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
+  })
+
+  console.log({ r1, r2 })
+
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
+})

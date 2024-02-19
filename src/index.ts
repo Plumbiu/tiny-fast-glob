@@ -15,7 +15,7 @@ interface Options {
 
 export async function glob(_pattern: string | string[], options: Options = {}) {
   const {
-    cwd: rootCwd = '.',
+    cwd: root = '.',
     ignore = [],
     absolute = false,
     dot = false,
@@ -23,12 +23,12 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     onlyFiles = true,
   } = options
 
-  if (!isLegalPath(rootCwd)) {
+  if (!isLegalPath(root)) {
     return []
   }
   const result: string[] = []
   const cwds = Object.entries(
-    createCwds(rootCwd, typeof _pattern === 'string' ? [_pattern] : _pattern),
+    createCwds(root, typeof _pattern === 'string' ? [_pattern] : _pattern),
   )
   const shouldIgnore =
     ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
@@ -54,10 +54,14 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   await Promise.all(
     cwds.map(async ([_cwd, _pattern]) => {
       try {
-        const root = await fsp.readdir(_cwd, {
-          withFileTypes: true,
-        })
-        await _glob(_cwd, _cwd, root, _pattern)
+        await _glob(
+          _cwd,
+          _cwd,
+          await fsp.readdir(_cwd, {
+            withFileTypes: true,
+          }),
+          _pattern,
+        )
       } catch (error) {}
     }),
   )
@@ -100,6 +104,6 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   }
 
   return absolute
-    ? result.map((item) => path.join(process.cwd(), item))
+    ? result.map((item) => path.join(root === '.' ? process.cwd() : root, item))
     : result
 }
