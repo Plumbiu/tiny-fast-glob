@@ -88,7 +88,5 @@ One of reason of `tiny-fast-glob` is faster is that it **doesn't fully support a
 
 # Related projects
 
-`tiny-fast-glob` is only support `glob` method yet, You might also be interested in these projects:
-
 - [glob](https://github.com/isaacs/node-glob)
 - [fast-glob](https://github.com/mrmlnc/fast-glob)
