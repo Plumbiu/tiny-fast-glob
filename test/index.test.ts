@@ -117,6 +117,20 @@ test('dot', async () => {
   expect(slash(r2.sort())).toEqual(r1.sort())
 })
 
+test('**', async () => {
+  const r1 = await fast_glob('**', {
+    cwd: 'node_modules',
+    followSymbolicLinks: false,
+    onlyFiles: true,
+  })
+
+  const r2 = await tiny_fast_glob('**', {
+    cwd: 'node_modules',
+  })
+
+  expect(slash(r2.sort())).toEqual(r1.sort())
+})
+
 test('**/*', async () => {
   const r1 = await fast_glob('**/*', {
     cwd: 'node_modules',
@@ -143,4 +157,16 @@ test('./', async () => {
   })
 
   expect(slash(r2.sort())).toEqual(r1.sort())
+})
+
+test('unicode', async () => {
+  const r1 = await fast_glob('test/**/*.ts', {
+    onlyFiles: true,
+  })
+
+  const r2 = await tiny_fast_glob('test/**/*.ts', {
+    followSymbolicLinks: true,
+  })
+
+  expect(slash(r2).sort()).toEqual(r1.sort())
 })

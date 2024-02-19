@@ -12,6 +12,15 @@ interface Options {
   onlyFiles?: boolean
 }
 
+function ligealPath(str: string) {
+  for (const ch of str) {
+    if (ch.length > 1) {
+      return false
+    }
+  }
+  return true
+}
+
 export async function glob(_pattern: string | string[], options: Options = {}) {
   const {
     cwd = '.',
@@ -21,7 +30,11 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     followSymbolicLinks = false,
     onlyFiles = true,
   } = options
-  const root = await fsp.readdir(cwd, { withFileTypes: true })
+
+  if (!ligealPath(cwd)) {
+    return []
+  }
+
   const judgeIgnore =
     ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
   const result: string[] = []
@@ -32,7 +45,12 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     }),
   )
 
-  await _glob(cwd, root)
+  try {
+    const root = fs.readdirSync(cwd, {
+      withFileTypes: true,
+    })
+    await _glob(cwd, root)
+  } catch (error) {}
 
   function match(p: string, pat: string | string[]) {
     return micromatch.isMatch(p, pat, {
@@ -69,18 +87,20 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
             if (!onlyFiles) {
               updateResult(patternPath)
             }
-            const newDirs = await fsp.readdir(full, {
-              withFileTypes: true,
-            })
-
-            await _glob(full, newDirs)
-          } else {
+            if (ligealPath(full)) {
+              try {
+                const newDirs = await fsp.readdir(full, {
+                  withFileTypes: true,
+                })
+                await _glob(full, newDirs)
+              } catch (error) {}
+            }
           }
         } else if (item.isFile()) {
           updateResult(patternPath)
         }
       }),
-    )
+    ).catch((err) => {})
   }
 
   return absolute
