@@ -15,9 +15,9 @@ test('createCwds', () => {
   let patterns = ['hello/**/*.js', '**/*.ts', 'hello/**/*.ts']
   expect(f(cwd, patterns)).toEqual({
     'src/test/hello': [
-      { base: 'hello', glob: '**/*.js' },
-      { base: 'hello', glob: '**/*.ts' },
+      { base: 'hello', glob: '**/*.js', prefix: '' },
+      { base: 'hello', glob: '**/*.ts', prefix: '' },
     ],
-    'src/test': [{ base: '', glob: '**/*.ts' }],
+    'src/test': [{ base: '', glob: '**/*.ts', prefix: '' }],
   })
 })

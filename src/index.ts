@@ -13,7 +13,7 @@ interface Options {
   onlyFiles?: boolean
 }
 
-export async function glob(_pattern: string | string[], options: Options = {}) {
+export async function glob(pattern: string | string[], options: Options = {}) {
   const {
     cwd: root = '.',
     ignore = [],
@@ -28,7 +28,7 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   }
   const result: string[] = []
   const cwds = Object.entries(
-    createCwds(root, typeof _pattern === 'string' ? [_pattern] : _pattern),
+    createCwds(root, typeof pattern === 'string' ? [pattern] : pattern),
   )
   const shouldIgnore =
     ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
@@ -39,14 +39,10 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     })
   }
 
-  function updateResult(p: string, patternPath: string, patterns: Pattern[]) {
-    for (const { glob, base } of patterns) {
+  function updateResult(patternPath: string, patterns: Pattern[]) {
+    for (const { glob, base, prefix } of patterns) {
       if (match(patternPath, glob)) {
-        result.push(
-          glob[0] === '.' && glob[1] === '/'
-            ? './' + path.join(base, patternPath)
-            : p,
-        )
+        result.push(prefix + path.join(base, patternPath))
       }
     }
   }
@@ -82,14 +78,14 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
         const patternPath = path.relative(cwd, fullPath)
 
         if (item.isFile()) {
-          updateResult(fullPath, patternPath, pattern)
+          updateResult(patternPath, pattern)
         } else if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
           if (!shouldIgnore(patternPath)) {
             if (!onlyFiles) {
-              updateResult(fullPath, patternPath, pattern)
+              updateResult(patternPath, pattern)
             }
             try {
               const newDirs = await fsp.readdir(fullPath, {

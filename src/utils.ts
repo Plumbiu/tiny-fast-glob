@@ -10,13 +10,10 @@ export function isLegalPath(str: string) {
   return true
 }
 
-function isAbsolutePath(p: string) {
-  return p[0] === '.' && p[1] === '/'
-}
-
 export interface Pattern {
   base: string
   glob: string
+  prefix: string
 }
 
 export type Result = Record<string, Pattern[]>
@@ -24,14 +21,15 @@ export type Result = Record<string, Pattern[]>
 export function createCwds(cwd: string, patterns: string[]) {
   const result: Result = {}
   for (const pattern of patterns) {
-    const { base, glob } = micromatch.scan(pattern)
+    const { base, glob, prefix } = micromatch.scan(pattern)
     const key = base ? path.join(cwd, base) : cwd
     if (!result[key]) {
       result[key] = []
     }
     result[key].push({
       base,
-      glob: isAbsolutePath(pattern) ? './' + glob : glob,
+      prefix,
+      glob,
     })
   }
   return result

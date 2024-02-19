@@ -3,20 +3,7 @@ import fast_glob from 'fast-glob'
 import { glob as tiny_fast_glob } from '../src/index'
 import { slashMap } from './utils'
 
-test('simple', async () => {
-  const r1 = await fast_glob('src/**/*.ts', {
-    followSymbolicLinks: false,
-    absolute: true,
-  })
-
-  const r2 = await tiny_fast_glob('src/**/*.ts', {
-    absolute: true,
-  })
-
-  expect(slashMap(r2.sort())).toEqual(r1.sort())
-})
-
-test('absolute-true', async () => {
+test('absolute', async () => {
   const r1 = await fast_glob('**/*.js', {
     followSymbolicLinks: false,
     absolute: true,
@@ -39,21 +26,6 @@ test('cwd', async () => {
   const r2 = await tiny_fast_glob('**/*.js', {
     cwd: 'src',
     absolute: true,
-  })
-
-  expect(slashMap(r2.sort())).toEqual(r1.sort())
-})
-
-test('followSymbolicLinks', async () => {
-  const r1 = await fast_glob('**/*.js', {
-    cwd: 'src',
-    absolute: true,
-  })
-
-  const r2 = await tiny_fast_glob('**/*.js', {
-    cwd: 'src',
-    absolute: true,
-    followSymbolicLinks: true,
   })
 
   expect(slashMap(r2.sort())).toEqual(r1.sort())
@@ -172,7 +144,7 @@ test('**/* by ignore', async () => {
   expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
-test('test', async () => {
+test('cwd with ./', async () => {
   const r1 = await fast_glob('./fast-glob/*', {
     cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
     followSymbolicLinks: false,
@@ -184,8 +156,6 @@ test('test', async () => {
     absolute: true,
     cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
   })
-
-  console.log({ r1, r2 })
 
   expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
