@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import micromatch from 'micromatch'
+import { Pattern, createCwds, isLegalPath } from './utils'
 
 interface Options {
   cwd?: string
@@ -12,23 +13,9 @@ interface Options {
   onlyFiles?: boolean
 }
 
-function isLegalPath(str: string) {
-  for (const ch of str) {
-    if (ch.length > 1) {
-      return false
-    }
-  }
-  return true
-}
-
-interface Pattern {
-  pattern: string
-  isAbsolute: boolean
-}
-
 export async function glob(_pattern: string | string[], options: Options = {}) {
-  let {
-    cwd = '.',
+  const {
+    cwd: rootCwd = '.',
     ignore = [],
     absolute = false,
     dot = false,
@@ -36,45 +23,15 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     onlyFiles = true,
   } = options
 
-  const _cwd = cwd
-  if (!isLegalPath(cwd)) {
+  if (!isLegalPath(rootCwd)) {
     return []
   }
-
-  const judgeIgnore =
-    ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
   const result: string[] = []
-  const IS_PATTERN_STRING = typeof _pattern === 'string'
-
-  const patterns: Pattern[] = []
-  if (IS_PATTERN_STRING) {
-    const { base, glob } = micromatch.scan(_pattern)
-    if (base) {
-      cwd = path.join(cwd, base)
-      patterns.push({
-        pattern: glob,
-        isAbsolute: glob[0] === '.' && glob[1] === '/',
-      })
-    } else {
-      patterns.push({
-        pattern: _pattern,
-        isAbsolute: _pattern[0] === '.' && _pattern[1] === '/',
-      })
-    }
-  } else {
-    patterns.push(
-      ..._pattern.map((pattern) => {
-        return { pattern, isAbsolute: pattern[0] === '.' && pattern[1] === '/' }
-      }),
-    )
-  }
-
-  try {
-    const root = fs.readdirSync(cwd, {
-      withFileTypes: true,
-    })
-    await _glob(cwd, root)
-  } catch (error) {}
+  const cwds = Object.entries(
+    createCwds(rootCwd, typeof _pattern === 'string' ? [_pattern] : _pattern),
+  )
+  const shouldIgnore =
+    ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
 
   function match(p: string, pat: string | string[]) {
     return micromatch.isMatch(p, pat, {
@@ -82,44 +39,59 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     })
   }
 
-  function updateResult(p: string) {
-    for (const { pattern, isAbsolute } of patterns) {
-      if (match(p, pattern)) {
-        if (isAbsolute) {
-          result.push('./' + p)
-        } else {
-          result.push(p)
-        }
+  function updateResult(p: string, patternPath: string, patterns: Pattern[]) {
+    for (const { glob, base } of patterns) {
+      if (match(patternPath, glob)) {
+        result.push(
+          glob[0] === '.' && glob[1] === '/'
+            ? './' + path.join(base, patternPath)
+            : p,
+        )
       }
     }
   }
 
-  async function _glob(p: string, dirs: fs.Dirent[]) {
+  await Promise.all(
+    cwds.map(async ([_cwd, _pattern]) => {
+      try {
+        const root = await fsp.readdir(_cwd, {
+          withFileTypes: true,
+        })
+        await _glob(_cwd, _cwd, root, _pattern)
+      } catch (error) {}
+    }),
+  )
+
+  async function _glob(
+    p: string,
+    cwd: string,
+    dirs: fs.Dirent[],
+    pattern: Pattern[],
+  ) {
     await Promise.all(
       dirs.map(async (item) => {
-        if (!dot && item.name[0] === '.') {
+        if ((!dot && item.name[0] === '.') || !isLegalPath(item.name)) {
           return
         }
-        if (!isLegalPath(item.name)) {
-          return
-        }
-        const full = path.join(p, item.name)
-        const patternPath = path.relative(_cwd, full)
+
+        const fullPath = path.join(p, item.name)
+        const patternPath = path.relative(cwd, fullPath)
+
         if (item.isFile()) {
-          updateResult(patternPath)
+          updateResult(fullPath, patternPath, pattern)
         } else if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
-          if (!judgeIgnore(patternPath)) {
+          if (!shouldIgnore(patternPath)) {
             if (!onlyFiles) {
-              updateResult(patternPath)
+              updateResult(fullPath, patternPath, pattern)
             }
             try {
-              const newDirs = await fsp.readdir(full, {
+              const newDirs = await fsp.readdir(fullPath, {
                 withFileTypes: true,
               })
-              await _glob(full, newDirs)
+              await _glob(fullPath, cwd, newDirs, pattern)
             } catch (error) {}
           }
         }

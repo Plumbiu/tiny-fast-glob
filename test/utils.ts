@@ -1,4 +1,8 @@
 const windowsSlashRE = /\\/g
-export function slash(ps: string[]) {
-  return ps.map((item) => item.replace(windowsSlashRE, '/'))
+export function slash(p: string) {
+  return p.replace(windowsSlashRE, '/')
+}
+
+export function slashMap(ps: string[]) {
+  return ps.map((item) => slash(item))
 }

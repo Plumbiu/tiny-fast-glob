@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import fast_glob from 'fast-glob'
 import { glob as tiny_fast_glob } from '../src/index'
-import { slash } from './utils'
+import { slashMap } from './utils'
 
 test('simple', async () => {
   const r1 = await fast_glob('src/**/*.ts', {
@@ -13,20 +13,7 @@ test('simple', async () => {
     absolute: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
-})
-
-test('equal with fast-glob', async () => {
-  const r1 = await fast_glob('**/*.js', {
-    ignore: ['**/node_modules'],
-    absolute: false,
-  })
-  const r2 = await tiny_fast_glob('**/*.js', {
-    ignore: ['**/node_modules'],
-    absolute: false,
-  })
-
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('absolute-true', async () => {
@@ -39,7 +26,7 @@ test('absolute-true', async () => {
     absolute: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('cwd', async () => {
@@ -54,7 +41,7 @@ test('cwd', async () => {
     absolute: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('followSymbolicLinks', async () => {
@@ -69,7 +56,7 @@ test('followSymbolicLinks', async () => {
     followSymbolicLinks: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('followSymbolicLinks', async () => {
@@ -82,7 +69,7 @@ test('followSymbolicLinks', async () => {
     followSymbolicLinks: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('filesOnly', async () => {
@@ -97,7 +84,7 @@ test('filesOnly', async () => {
     onlyFiles: false,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('dot', async () => {
@@ -114,7 +101,7 @@ test('dot', async () => {
     dot: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('**', async () => {
@@ -128,7 +115,7 @@ test('**', async () => {
     cwd: 'node_modules',
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('**/*', async () => {
@@ -142,7 +129,7 @@ test('**/*', async () => {
     cwd: 'node_modules',
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('./', async () => {
@@ -156,7 +143,7 @@ test('./', async () => {
     followSymbolicLinks: true,
   })
 
-  expect(slash(r2.sort())).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
 
 test('unicode', async () => {
@@ -168,20 +155,19 @@ test('unicode', async () => {
     followSymbolicLinks: true,
   })
 
-  expect(slash(r2).sort()).toEqual(r1.sort())
+  expect(slashMap(r2).sort()).toEqual(r1.sort())
 })
 
-test('fff', async () => {
-  const r1 = await fast_glob(['./warmup/*.js'], {
-    cwd: 'D:/Code/Community/vite/playground-temp/html',
-    absolute: true,
+test('**/* by ignore', async () => {
+  const r1 = await fast_glob(['**/*.js', '**/*.ts'], {
+    ignore: ['*eslint*', '@types/**/*', 'dist/**'],
+    followSymbolicLinks: false,
+    onlyFiles: true,
   })
 
-  const r2 = await tiny_fast_glob(['./warmup/*.js'], {
-    cwd: 'D:/Code/Community/vite/playground-temp/html',
-    absolute: true,
+  const r2 = await tiny_fast_glob(['**/*.js', '**/*.ts'], {
+    ignore: ['*eslint*', '@types/**/*', 'dist/**'],
   })
-  console.log({ r1, r2 })
 
-  expect(slash(r2).sort()).toEqual(r1.sort())
+  expect(slashMap(r2.sort())).toEqual(r1.sort())
 })
