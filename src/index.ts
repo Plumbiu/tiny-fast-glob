@@ -26,18 +26,10 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
   const result: string[] = []
   const patterns = (typeof _pattern === 'string' ? [_pattern] : _pattern).map(
-    (item) => {
-      if (item[0] === '.' && item[1] === '/') {
-        return {
-          pattern: item,
-          startsAbsolte: true,
-        }
-      }
-      return {
-        pattern: item,
-        startsAbsolte: false,
-      }
-    },
+    (pattern) => ({
+      pattern,
+      isAbsolute: pattern[0] === '.' && pattern[1] === '/',
+    }),
   )
 
   await _glob(cwd, root)
@@ -49,9 +41,9 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   }
 
   function updateResult(p: string) {
-    for (const { pattern, startsAbsolte } of patterns) {
+    for (const { pattern, isAbsolute } of patterns) {
       if (m(p, pattern)) {
-        if (startsAbsolte) {
+        if (isAbsolute) {
           result.push('./' + p)
         } else {
           result.push(p)
