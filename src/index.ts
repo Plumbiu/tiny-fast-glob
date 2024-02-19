@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
-import match from 'micromatch'
+import micromatch from 'micromatch'
 
 interface Options {
   cwd?: string
@@ -23,7 +23,7 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   } = options
   const root = await fsp.readdir(cwd, { withFileTypes: true })
   const judgeIgnore =
-    ignore.length > 0 ? (p: string) => m(p, ignore) : () => false
+    ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
   const result: string[] = []
   const patterns = (typeof _pattern === 'string' ? [_pattern] : _pattern).map(
     (pattern) => ({
@@ -34,15 +34,15 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
 
   await _glob(cwd, root)
 
-  function m(p: string, pat: string | string[]) {
-    return match.isMatch(p, pat, {
+  function match(p: string, pat: string | string[]) {
+    return micromatch.isMatch(p, pat, {
       dot,
     })
   }
 
   function updateResult(p: string) {
     for (const { pattern, isAbsolute } of patterns) {
-      if (m(p, pattern)) {
+      if (match(p, pattern)) {
         if (isAbsolute) {
           result.push('./' + p)
         } else {
