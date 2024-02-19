@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { glob as fast_glob } from 'fast-glob'
+import fast_glob from 'fast-glob'
 import { glob as tiny_fast_glob } from '../src/index'
 import { slash } from './utils'
 
@@ -167,6 +167,21 @@ test('unicode', async () => {
   const r2 = await tiny_fast_glob('test/**/*.ts', {
     followSymbolicLinks: true,
   })
+
+  expect(slash(r2).sort()).toEqual(r1.sort())
+})
+
+test('fff', async () => {
+  const r1 = await fast_glob(['./warmup/*.js'], {
+    cwd: 'D:/Code/Community/vite/playground-temp/html',
+    absolute: true,
+  })
+
+  const r2 = await tiny_fast_glob(['./warmup/*.js'], {
+    cwd: 'D:/Code/Community/vite/playground-temp/html',
+    absolute: true,
+  })
+  console.log({ r1, r2 })
 
   expect(slash(r2).sort()).toEqual(r1.sort())
 })

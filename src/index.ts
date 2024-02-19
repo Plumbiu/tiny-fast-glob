@@ -21,8 +21,13 @@ function isLegalPath(str: string) {
   return true
 }
 
+interface Pattern {
+  pattern: string
+  isAbsolute: boolean
+}
+
 export async function glob(_pattern: string | string[], options: Options = {}) {
-  const {
+  let {
     cwd = '.',
     ignore = [],
     absolute = false,
@@ -31,6 +36,7 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
     onlyFiles = true,
   } = options
 
+  const _cwd = cwd
   if (!isLegalPath(cwd)) {
     return []
   }
@@ -38,12 +44,30 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
   const judgeIgnore =
     ignore.length > 0 ? (p: string) => match(p, ignore) : () => false
   const result: string[] = []
-  const patterns = (typeof _pattern === 'string' ? [_pattern] : _pattern).map(
-    (pattern) => ({
-      pattern,
-      isAbsolute: pattern[0] === '.' && pattern[1] === '/',
-    }),
-  )
+  const IS_PATTERN_STRING = typeof _pattern === 'string'
+
+  const patterns: Pattern[] = []
+  if (IS_PATTERN_STRING) {
+    const { base, glob } = micromatch.scan(_pattern)
+    if (base) {
+      cwd = path.join(cwd, base)
+      patterns.push({
+        pattern: glob,
+        isAbsolute: glob[0] === '.' && glob[1] === '/',
+      })
+    } else {
+      patterns.push({
+        pattern: _pattern,
+        isAbsolute: _pattern[0] === '.' && _pattern[1] === '/',
+      })
+    }
+  } else {
+    patterns.push(
+      ..._pattern.map((pattern) => {
+        return { pattern, isAbsolute: pattern[0] === '.' && pattern[1] === '/' }
+      }),
+    )
+  }
 
   try {
     const root = fs.readdirSync(cwd, {
@@ -80,9 +104,10 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
           return
         }
         const full = path.join(p, item.name)
-        const patternPath = path.relative(cwd, full)
-
-        if (
+        const patternPath = path.relative(_cwd, full)
+        if (item.isFile()) {
+          updateResult(patternPath)
+        } else if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
@@ -97,8 +122,6 @@ export async function glob(_pattern: string | string[], options: Options = {}) {
               await _glob(full, newDirs)
             } catch (error) {}
           }
-        } else if (item.isFile()) {
-          updateResult(patternPath)
         }
       }),
     ).catch((err) => {})
