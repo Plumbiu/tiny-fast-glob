@@ -99,8 +99,6 @@ export async function glob(pattern: string | string[], options: Options = {}) {
       }),
     ).catch((err) => {})
   }
-
-  return absolute
-    ? result.map((item) => path.join(root === '.' ? process.cwd() : root, item))
-    : result
+  const joinCwd = root === '.' ? process.cwd() : root
+  return absolute ? result.map((item) => path.join(joinCwd, item)) : result
 }
