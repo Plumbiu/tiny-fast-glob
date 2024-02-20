@@ -6,6 +6,8 @@ import { diffSet } from './utils'
 export async function fn(p: string | string[], opts: Options = {}) {
   const r1 = await fg(p, opts)
   const r2 = await tfg(p, opts)
+  console.log({ r1, r2 })
+
   expect(diffSet(r1, r2)).toEqual([])
 }
 
@@ -62,15 +64,15 @@ describe('path', () => {
 
   test('./ with cwd and absolute', async () => {
     await fn('./fast-glob/*', {
-      cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
+      cwd: 'node_modules',
     })
     await fn('./fast-glob/*', {
-      cwd: 'D:\\Code\\Project\\@plumbiu\\tiny-fast-glob\\node_modules',
+      cwd: 'node_modules',
       absolute: true,
     })
   })
 
-  test.only('bracket', async () => {
+  test('bracket', async () => {
     await fn('test/brackets \\(foo\\)/**/*.ts')
   })
 })
