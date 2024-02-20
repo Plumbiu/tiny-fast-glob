@@ -30,7 +30,7 @@ describe('options', () => {
     })
   })
 
-  test.only('followSymbolicLinks', async () => {
+  test('followSymbolicLinks', async () => {
     await fn('**/.gitignore', {})
   })
 
