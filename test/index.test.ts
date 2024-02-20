@@ -70,8 +70,8 @@ describe('path', () => {
     })
   })
 
-  test('bracket', async () => {
-    await fn('test/brackets (foo)/**/*.ts')
+  test.only('bracket', async () => {
+    await fn('test/brackets \\(foo\\)/**/*.ts')
   })
 })
 

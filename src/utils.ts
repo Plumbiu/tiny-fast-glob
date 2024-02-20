@@ -21,7 +21,9 @@ export type Result = Record<string, Pattern[]>
 export function createCwds(cwd: string, patterns: string[]) {
   const result: Result = {}
   for (const pattern of patterns) {
-    const { base, glob, prefix } = micromatch.scan(pattern)
+    const { base, glob, prefix } = micromatch.scan(pattern, {
+      unescape: true,
+    })
     const key = base ? path.join(cwd, base) : cwd
     if (!result[key]) {
       result[key] = []
