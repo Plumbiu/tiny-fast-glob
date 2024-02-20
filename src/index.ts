@@ -47,17 +47,18 @@ export async function glob(pattern: string | string[], options: Options = {}) {
       }
     }
   }
-
   await Promise.all(
     cwds.map(async ([_cwd, _pattern]) => {
-      await _glob(
-        _cwd,
-        '.',
-        await fsp.readdir(_cwd, {
-          withFileTypes: true,
-        }),
-        _pattern,
-      )
+      try {
+        await _glob(
+          _cwd,
+          '.',
+          await fsp.readdir(_cwd, {
+            withFileTypes: true,
+          }),
+          _pattern,
+        )
+      } catch (error) {}
     }),
   )
 
@@ -77,13 +78,15 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
         if (item.isFile()) {
           updateResult(patternPath, pattern)
-        } else if (
+          return
+        }
+        if (!dot && name[0] === '.') {
+          return
+        }
+        if (
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
-          if (!dot && name[0] === '.') {
-            return
-          }
           if (!shouldIgnore(name)) {
             if (!onlyFiles) {
               updateResult(patternPath, pattern)
