@@ -4,7 +4,7 @@ import path from 'node:path'
 import micromatch from 'micromatch'
 import { Pattern, createCwds, isLegalPath } from './utils'
 
-interface Options {
+export interface Options {
   cwd?: string
   ignore?: string[]
   absolute?: boolean
@@ -19,7 +19,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     ignore = [],
     absolute = false,
     dot = false,
-    followSymbolicLinks = false,
+    followSymbolicLinks = true,
     onlyFiles = true,
   } = options
 
