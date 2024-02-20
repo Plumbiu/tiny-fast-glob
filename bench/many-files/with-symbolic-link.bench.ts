@@ -11,7 +11,5 @@ bench('fast-glob', async () => {
 bench('tiny-fast-glob', async () => {
   await tiny_fast_glob('**/*.js', {
     absolute: true,
-    onlyFiles: true,
-    followSymbolicLinks: true,
   })
 })
