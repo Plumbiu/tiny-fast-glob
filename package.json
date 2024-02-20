@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.4.4",
   "scripts": {
-    "bench": "vitest bench --run",
+    "bench": "vitest bench --run --maxWorkers 1 --minWorkers 1",
     "test": "vitest",
     "build": "tsup"
   },
