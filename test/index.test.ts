@@ -6,8 +6,6 @@ import { diffSet } from './utils'
 export async function fn(p: string | string[], opts: Options = {}) {
   const r1 = await fg(p, opts)
   const r2 = await tfg(p, opts)
-  console.log({ r1, r2 })
-
   expect(diffSet(r1, r2)).toEqual([])
 }
 
