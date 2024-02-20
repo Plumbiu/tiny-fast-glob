@@ -50,16 +50,14 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
   await Promise.all(
     cwds.map(async ([_cwd, _pattern]) => {
-      try {
-        await _glob(
-          _cwd,
-          _cwd,
-          await fsp.readdir(_cwd, {
-            withFileTypes: true,
-          }),
-          _pattern,
-        )
-      } catch (error) {}
+      await _glob(
+        _cwd,
+        '.',
+        await fsp.readdir(_cwd, {
+          withFileTypes: true,
+        }),
+        _pattern,
+      )
     }),
   )
 
@@ -71,12 +69,11 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   ) {
     await Promise.all(
       dirs.map(async (item) => {
-        if ((!dot && item.name[0] === '.') || !isLegalPath(item.name)) {
+        const name = item.name
+        if (!isLegalPath(name)) {
           return
         }
-
-        const fullPath = path.join(p, item.name)
-        const patternPath = path.relative(cwd, fullPath)
+        const patternPath = path.join(cwd, name)
 
         if (item.isFile()) {
           updateResult(patternPath, pattern)
@@ -84,20 +81,22 @@ export async function glob(pattern: string | string[], options: Options = {}) {
           item.isDirectory() ||
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
-          if (!shouldIgnore(patternPath)) {
+          if (!dot && name[0] === '.') {
+            return
+          }
+          if (!shouldIgnore(name)) {
             if (!onlyFiles) {
               updateResult(patternPath, pattern)
             }
-            try {
-              const newDirs = await fsp.readdir(fullPath, {
-                withFileTypes: true,
-              })
-              await _glob(fullPath, cwd, newDirs, pattern)
-            } catch (error) {}
+            const fullPath = path.join(p, name)
+            const newDirs = await fsp.readdir(fullPath, {
+              withFileTypes: true,
+            })
+            await _glob(fullPath, patternPath, newDirs, pattern)
           }
         }
       }),
-    ).catch((err) => {})
+    )
   }
   const joinCwd = path.join(process.cwd(), root)
   return absolute ? result.map((item) => path.join(joinCwd, item)) : result

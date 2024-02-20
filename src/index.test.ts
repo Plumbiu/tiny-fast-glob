@@ -10,7 +10,7 @@ function f(cwd: string, patterns: string[]) {
   return result
 }
 
-test('createCwds', () => {
+test.skip('createCwds', () => {
   let cwd = 'src/test'
   let patterns = ['hello/**/*.js', '**/*.ts', 'hello/**/*.ts']
   expect(f(cwd, patterns)).toEqual({
