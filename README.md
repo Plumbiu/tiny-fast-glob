@@ -4,7 +4,7 @@ The simplest and fastest glob method implementation.
 
 # Feature
 
-- ⚡️Super fast(2x ~ 80x faster than `fast-glob`)
+- ⚡️Super fast
 - 📦Super lightweight.
 
 # Install
@@ -53,37 +53,44 @@ interface Options {
 One of reason of `tiny-fast-glob` is faster is that it **doesn't fully support all `fast-glob` or `glob` options**.
 
 ```
- ✓ bench/many-files/with-symbolic-link.bench.ts (2) 3182ms
-     name                 hz     min      max     mean      p75      p99     p995     p999     rme  samples
-   · fast-glob        6.8642  132.89   161.00   145.68   154.44   161.00   161.00   161.00  ±4.83%       10
-   · tiny-fast-glob  95.6887  9.2791  13.3699  10.4506  10.6812  13.3699  13.3699  13.3699  ±2.37%       48   fastest       
- ✓ bench/many-files/with-dir.bench.ts (2) 3288ms
+ ✓ bench/many-files/with-dir.bench.ts (2) 2472ms
      name                 hz      min      max     mean      p75      p99     p995     p999     rme  samples
-   · fast-glob        6.6746   137.83   171.99   149.82   154.84   171.99   171.99   171.99  ±5.37%       10
-   · tiny-fast-glob  49.6195  17.7521  27.8040  20.1534  20.5896  27.8040  27.8040  27.8040  ±4.32%       25   fastest      
- ✓ bench/simple-files.bench.ts (2) 1227ms
-     name                  hz     min     max    mean     p75     p99    p995    p999     rme  samples
-   · fast-glob       1,749.12  0.0810  2.4230  0.5717  0.7425  1.4651  1.7603  2.4230  ±3.39%      875
-   · tiny-fast-glob  4,354.62  0.0321  1.6271  0.2296  0.3630  0.8835  0.9941  1.5507  ±3.95%     2179   fastest
- ✓ bench/many-files/no-symbolic-links.bench.ts (2) 1586ms
+   · fast-glob        8.2334   112.71   148.20   121.46   119.02   148.20   148.20   148.20  ±6.75%       10
+   · tiny-fast-glob  73.1458  11.9536  18.4545  13.6713  14.4217  18.4545  18.4545  18.4545  ±3.79%       37   fastest
+ ✓ bench/many-files/no-symbolic-links.bench.ts (2) 1311ms
      name                  hz      min      max     mean      p75      p99     p995     p999     rme  samples
-   · fast-glob        16.6655  48.4267  74.7283  60.0043  65.0996  74.7283  74.7283  74.7283  ±9.55%       10
-   · tiny-fast-glob  1,715.22   0.1729   2.8002   0.5830   0.7941   2.1902   2.5048   2.8002  ±5.24%      858   fastest     
+   · fast-glob        38.3151  22.2032  32.8681  26.0994  27.1893  32.8681  32.8681  32.8681  ±5.30%       20
+   · tiny-fast-glob  6,759.61   0.1289   1.4666   0.1479   0.1438   0.3014   0.3531   0.4199  ±0.90%     3380   fastest
+ ✓ bench/simple-files.bench.ts (2) 1237ms
+     name                   hz     min     max    mean     p75     p99    p995    p999     rme  samples
+   · fast-glob       19,025.03  0.0332  6.1481  0.0526  0.0452  0.1917  0.2815  1.5762  ±4.24%     9513
+   · tiny-fast-glob  36,049.34  0.0231  2.6264  0.0277  0.0260  0.0783  0.1192  0.3213  ±1.42%    18025   fastest
+ ✓ bench/many-files/dot-true.bench.ts (2) 3873ms
+     name                 hz      min     max     mean     p75     p99    p995    p999     rme  samples
+   · fast-glob       10.0332  95.3182  105.04  99.6690  101.79  105.04  105.04  105.04  ±2.22%       10   fastest
+   · tiny-fast-glob   6.5135   147.43  160.37   153.53  155.97  160.37  160.37  160.37  ±2.00%       10
+ ✓ bench/many-files/with-symbolic-link.bench.ts (2) 2317ms
+     name                hz     min     max    mean     p75     p99    p995    p999     rme  samples
+   · fast-glob       9.0873  106.30  120.35  110.04  109.77  120.35  120.35  120.35  ±3.12%       10
+   · tiny-fast-glob  189.93  4.7883  6.3498  5.2650  5.4883  6.3498  6.3498  6.3498  ±1.31%       95   fastest
 
 
  BENCH  Summary
 
-  tiny-fast-glob - bench/simple-files.bench.ts > 
-    2.49x faster than fast-glob
+  tiny-fast-glob - bench/simple-files.bench.ts >
+    1.89x faster than fast-glob
 
-  tiny-fast-glob - bench/many-files/no-symbolic-links.bench.ts > 
-    102.92x faster than fast-glob
+  fast-glob - bench/many-files/dot-true.bench.ts >
+    1.54x faster than tiny-fast-glob
 
-  tiny-fast-glob - bench/many-files/with-dir.bench.ts > 
-    7.43x faster than fast-glob
+  tiny-fast-glob - bench/many-files/no-symbolic-links.bench.ts >
+    176.42x faster than fast-glob
 
-  tiny-fast-glob - bench/many-files/with-symbolic-link.bench.ts > 
-    13.94x faster than fast-glob
+  tiny-fast-glob - bench/many-files/with-dir.bench.ts >
+    8.88x faster than fast-glob
+
+  tiny-fast-glob - bench/many-files/with-symbolic-link.bench.ts >
+    20.90x faster than fast-glob
 ```
 
 # Related projects

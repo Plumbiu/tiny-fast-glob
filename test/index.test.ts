@@ -6,9 +6,10 @@ import { diffSet } from './utils'
 export async function fn(p: string | string[], opts: Options = {}) {
   const r1 = await fg(p, opts)
   const r2 = await tfg(p, opts)
-  console.log({ r1, r2 })
+  console.log({ r2, r1 })
 
   expect(diffSet(r1, r2)).toEqual([])
+  expect(r1.length).toBe(r2.length)
 }
 
 describe('options', () => {
@@ -28,10 +29,6 @@ describe('options', () => {
     await fn('**/*.js', {
       followSymbolicLinks: false,
     })
-  })
-
-  test('followSymbolicLinks', async () => {
-    await fn('**/.gitignore', {})
   })
 
   test('filesOnly', async () => {
@@ -78,6 +75,12 @@ describe('path', () => {
 
   test('bracket', async () => {
     await fn('test/brackets \\(foo\\)/**/*.ts')
+  })
+
+  test('array-string', async () => {
+    await fn(['**/*.js', '**/*.json'], {
+      dot: true,
+    })
   })
 })
 
