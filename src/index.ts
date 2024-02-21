@@ -27,9 +27,9 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     createCwds(root, typeof pattern === 'string' ? [pattern] : pattern),
   )
 
-  function insert(patternPath: string, patterns: Pattern[]) {
+  function insert(patternPath: string, patterns: Pattern[], isFile = false) {
     for (const { glob, base, prefix } of patterns) {
-      if (isMatch(patternPath, glob, dot)) {
+      if (isMatch(patternPath, glob, dot, isFile)) {
         const suffix = path.join(base, patternPath)
         result.push(prefix + suffix)
       }
@@ -61,7 +61,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
         }
         const patternPath = path.join(cwd, name)
         if (item.isFile()) {
-          insert(patternPath, pattern)
+          insert(patternPath, pattern, true)
           return
         }
         if (

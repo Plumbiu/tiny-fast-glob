@@ -34,11 +34,16 @@ export function isSimpleGlob(pattern: string) {
   return pattern.startsWith(SIMPLE_GLOB)
 }
 
-export function isMatch(p: string, pattern: string, dot: boolean) {
+export function isMatch(
+  p: string,
+  pattern: string,
+  dot: boolean,
+  isFile: boolean,
+) {
   if (pattern === '**/*' || pattern === '**') {
     return true
   }
-  if (isSimpleGlob(pattern)) {
+  if (isFile && isSimpleGlob(pattern)) {
     return p.endsWith(pattern.slice(SIMPLE_GLOB_LENGTH))
   }
   return micromatch.isMatch(p, pattern, {
