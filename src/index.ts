@@ -56,10 +56,10 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     await Promise.all(
       dirs.map(async (item) => {
         const name = item.name
-        const patternPath = path.join(cwd, name)
         if (!dot && name[0] === '.') {
           return
         }
+        const patternPath = path.join(cwd, name)
         if (item.isFile()) {
           insert(patternPath, pattern)
           return
