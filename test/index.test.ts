@@ -6,8 +6,6 @@ import { diffSet } from './utils'
 export async function fn(p: string | string[], opts: Options = {}) {
   const r1 = await fg(p, opts)
   const r2 = await tfg(p, opts)
-  console.log({ r2, r1 })
-
   expect(diffSet(r1, r2)).toEqual([])
   expect(r1.length).toBe(r2.length)
 }
@@ -38,7 +36,14 @@ describe('options', () => {
   })
 
   test('dot', async () => {
-    await fn('node_modules/**/*.js', {
+    await fn('**/*.js', {
+      dot: true,
+    })
+  })
+
+  test('ignore', async () => {
+    await fn('**/*.js', {
+      ignore: ['node_modules/minimatch/**', 'node_modules/vitest/**'],
       dot: true,
     })
   })
@@ -81,11 +86,5 @@ describe('path', () => {
     await fn(['**/*.js', '**/*.json'], {
       dot: true,
     })
-  })
-})
-
-describe('may bug', () => {
-  test('unicode', async () => {
-    await fn('test/**/*.ts')
   })
 })

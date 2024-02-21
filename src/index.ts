@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import micromatch from 'micromatch'
-import { Pattern, createCwds, isLegalPath, isMatch } from './utils'
+import { Pattern, createCwds, isMatch } from './utils'
 
 export interface Options {
   cwd?: string
@@ -22,19 +22,16 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     followSymbolicLinks = true,
     onlyFiles = true,
   } = options
-  if (!isLegalPath(root)) {
-    return []
-  }
   const result: string[] = []
   const cwds = Object.entries(
     createCwds(root, typeof pattern === 'string' ? [pattern] : pattern),
   )
 
-  function updateResult(patternPath: string, patterns: Pattern[]) {
+  function insert(patternPath: string, patterns: Pattern[]) {
     for (const { glob, base, prefix } of patterns) {
-      if (glob === '**/*' || isMatch(patternPath, glob, dot)) {
+      if (isMatch(patternPath, glob, dot)) {
         const suffix = path.join(base, patternPath)
-        result.push(prefix ? prefix + suffix : suffix)
+        result.push(prefix + suffix)
       }
     }
   }
@@ -59,15 +56,12 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     await Promise.all(
       dirs.map(async (item) => {
         const name = item.name
-        if (!isLegalPath(name)) {
-          return
-        }
         const patternPath = path.join(cwd, name)
         if (!dot && name[0] === '.') {
           return
         }
         if (item.isFile()) {
-          updateResult(patternPath, pattern)
+          insert(patternPath, pattern)
           return
         }
         if (
@@ -75,7 +69,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
           (followSymbolicLinks && item.isSymbolicLink())
         ) {
           if (!onlyFiles) {
-            updateResult(patternPath, pattern)
+            insert(patternPath, pattern)
           }
           const fullPath = path.join(p, name)
           const newDirs = await fsp.readdir(fullPath, {
@@ -90,4 +84,14 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
   const joinCwd = path.join(process.cwd(), root)
   return absolute ? result.map((item) => path.join(joinCwd, item)) : result
+}
+
+// FIXME: node 20.x do not support unicode
+export function isLegalPath(str: string) {
+  for (const ch of str) {
+    if (ch.length > 1) {
+      return false
+    }
+  }
+  return true
 }
