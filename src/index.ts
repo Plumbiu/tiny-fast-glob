@@ -1,6 +1,6 @@
-import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
+import { Dirent } from 'node:fs'
 import micromatch from 'micromatch'
 import { Pattern, createCwds, isMatch } from './utils'
 
@@ -26,64 +26,60 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   const cwds = Object.entries(
     createCwds(root, typeof pattern === 'string' ? [pattern] : pattern),
   )
+  const isIgnoreDot = dot ? () => false : (name: string) => name[0] === '.'
+  const isIgnoreSymbolicLink = followSymbolicLinks
+    ? (item: Dirent) => item.isSymbolicLink()
+    : () => false
+  const shouldInsertDir = onlyFiles
+    ? () => false
+    : (patternPath: string, pattern: Pattern) => insert(patternPath, pattern)
 
-  function insert(patternPath: string, patterns: Pattern[], isFile = false) {
-    for (const { glob, base, prefix } of patterns) {
+  function insert(patternPath: string, patterns: Pattern, isFile = false) {
+    const { base, prefix, globs } = patterns
+    for (const glob of globs) {
       if (isMatch(patternPath, glob, dot, isFile)) {
-        const suffix = path.join(base, patternPath)
+        const suffix = base ? path.join(base, patternPath) : patternPath
         result.push(prefix + suffix)
       }
     }
   }
+
   await Promise.all(
     cwds.map(async ([_cwd, _pattern]) => {
-      const initDirs = await fsp.readdir(_cwd, {
-        withFileTypes: true,
-      })
-      await _glob(_cwd, '.', initDirs, _pattern)
+      await _glob(_cwd, _pattern)
     }),
   ).catch((err) => {})
 
-  async function _glob(
-    p: string,
-    cwd: string,
-    dirs: fs.Dirent[],
-    pattern: Pattern[],
-  ) {
+  async function _glob(p: string, pattern: Pattern) {
     if (micromatch.isMatch(p, ignore, { dot })) {
       return
     }
+    const dirs = await fsp.readdir(p, {
+      withFileTypes: true,
+    })
     await Promise.all(
-      dirs.map(async (item) => {
-        const name = item.name
-        if (!dot && name[0] === '.') {
+      dirs.map(async (dir) => {
+        const name = dir.name
+        if (isIgnoreDot(name)) {
           return
         }
-        const patternPath = path.join(cwd, name)
-        if (item.isFile()) {
-          insert(patternPath, pattern, true)
+        const fullPath = path.join(p, name)
+        if (dir.isFile()) {
+          insert(fullPath, pattern, true)
           return
         }
-        if (
-          item.isDirectory() ||
-          (followSymbolicLinks && item.isSymbolicLink())
-        ) {
-          if (!onlyFiles) {
-            insert(patternPath, pattern)
-          }
-          const fullPath = path.join(p, name)
-          const newDirs = await fsp.readdir(fullPath, {
-            withFileTypes: true,
-          })
-
-          await _glob(fullPath, patternPath, newDirs, pattern)
+        if (dir.isDirectory() || isIgnoreSymbolicLink(dir)) {
+          shouldInsertDir(fullPath, pattern)
+          await _glob(fullPath, pattern)
         }
       }),
     )
   }
-
-  const joinCwd = path.join(process.cwd(), root)
-  return absolute ? result.map((item) => path.join(joinCwd, item)) : result
+  if (absolute) {
+    const joinCwd = path.join(process.cwd(), root)
+    return result.map((item) => path.join(joinCwd, item))
+  }
+  return result
 }
 
 // FIXME: node 20.x do not support unicode

@@ -3,11 +3,11 @@ import micromatch from 'micromatch'
 
 export interface Pattern {
   base: string
-  glob: string
+  globs: string[]
   prefix: string
 }
 
-export type Result = Record<string, Pattern[]>
+export type Result = Record<string, Pattern>
 
 export function createCwds(cwd: string, patterns: string[]) {
   const result: Result = {}
@@ -15,15 +15,15 @@ export function createCwds(cwd: string, patterns: string[]) {
     const { base, glob, prefix } = micromatch.scan(pattern, {
       unescape: true,
     })
-    const key = base ? path.join(cwd, base) : cwd
+    const key = base && cwd !== '.' ? path.join(cwd, base) : cwd
     if (!result[key]) {
-      result[key] = []
+      result[key] = {
+        base,
+        prefix,
+        globs: [],
+      }
     }
-    result[key].push({
-      base,
-      prefix,
-      glob,
-    })
+    result[key].globs.push(glob)
   }
   return result
 }
@@ -31,7 +31,12 @@ export function createCwds(cwd: string, patterns: string[]) {
 const SIMPLE_GLOB = '**/*.'
 const SIMPLE_GLOB_LENGTH = 4
 export function isSimpleGlob(pattern: string) {
-  return pattern.startsWith(SIMPLE_GLOB)
+  for (let i = 0; i <= SIMPLE_GLOB_LENGTH; i++) {
+    if (pattern[i] !== SIMPLE_GLOB[i]) {
+      return false
+    }
+  }
+  return true
 }
 
 export function isMatch(
