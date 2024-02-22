@@ -32,21 +32,21 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     : () => false
   const shouldInsertDir = onlyFiles
     ? () => false
-    : (patternPath: string, pattern: Pattern) => insert(patternPath, pattern)
+    : (p: string, pattern: Pattern) => insert(p, pattern)
 
-  function insert(patternPath: string, patterns: Pattern, isFile = false) {
+  function insert(p: string, patterns: Pattern, isFile = false) {
     const { base, prefix, globs } = patterns
     for (const glob of globs) {
-      if (isMatch(patternPath, glob, dot, isFile)) {
-        const suffix = base ? path.join(base, patternPath) : patternPath
+      if (isMatch(p, glob, dot, isFile)) {
+        const suffix = base ? path.join(base, p) : p
         result.push(prefix + suffix)
       }
     }
   }
 
   await Promise.all(
-    cwds.map(async ([_cwd, _pattern]) => {
-      await _glob(_cwd, _pattern)
+    cwds.map(async ([cwd, pattern]) => {
+      await _glob(cwd, pattern)
     }),
   ).catch((err) => {})
 
