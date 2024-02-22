@@ -15,7 +15,7 @@ export function createCwds(cwd: string, patterns: string[]) {
     const { base, glob, prefix } = micromatch.scan(pattern, {
       unescape: true,
     })
-    const key = base && cwd !== '.' ? path.join(cwd, base) : cwd
+    const key = base ? (cwd === '.' ? base : path.join(cwd, base)) : cwd
     if (!result[key]) {
       result[key] = {
         base,
