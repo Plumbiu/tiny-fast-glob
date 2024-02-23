@@ -1,4 +1,3 @@
-import path from 'node:path'
 import micromatch from 'micromatch'
 
 export interface Pattern {
@@ -15,7 +14,7 @@ export function createCwds(cwd: string, patterns: string[]) {
     const { base, glob, prefix } = micromatch.scan(pattern, {
       unescape: true,
     })
-    const key = base ? (cwd === '.' ? base : path.join(cwd, base)) : cwd
+    const key = base ? joinSlash(cwd, base) : cwd
     if (!result[key]) {
       result[key] = {
         base,
@@ -54,4 +53,14 @@ export function isMatch(
   return micromatch.isMatch(p, pattern, {
     dot,
   })
+}
+
+export function joinSlash(p1: string, p2: string) {
+  if (!p1) {
+    return p2
+  }
+  if (p1 === '.' || p1 === './' || p1 === '/') {
+    return p2
+  }
+  return `${p1}/${p2}`
 }

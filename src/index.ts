@@ -2,7 +2,7 @@ import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { Dirent } from 'node:fs'
 import micromatch from 'micromatch'
-import { Pattern, createCwds, isMatch } from './utils'
+import { Pattern, createCwds, isMatch, joinSlash } from './utils'
 
 export interface Options {
   cwd?: string
@@ -46,11 +46,11 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
   await Promise.all(
     cwds.map(async ([cwd, pattern]) => {
-      await _glob(cwd, pattern)
+      await _glob(cwd, '.', pattern)
     }),
   ).catch((err) => {})
 
-  async function _glob(p: string, pattern: Pattern) {
+  async function _glob(p: string, cwd: string, pattern: Pattern) {
     if (micromatch.isMatch(p, ignore, { dot })) {
       return
     }
@@ -63,14 +63,15 @@ export async function glob(pattern: string | string[], options: Options = {}) {
         if (isIgnoreDot(name)) {
           return
         }
-        const fullPath = path.join(p, name)
+        const patternPath = joinSlash(cwd, name)
         if (dir.isFile()) {
-          insert(fullPath, pattern, true)
+          insert(patternPath, pattern, true)
           return
         }
         if (dir.isDirectory() || isIgnoreSymbolicLink(dir)) {
-          shouldInsertDir(fullPath, pattern)
-          await _glob(fullPath, pattern)
+          const fullPath = path.join(p, name)
+          shouldInsertDir(patternPath, pattern)
+          await _glob(fullPath, patternPath, pattern)
         }
       }),
     )
