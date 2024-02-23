@@ -69,7 +69,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
           return
         }
         if (dir.isDirectory() || isIgnoreSymbolicLink(dir)) {
-          const fullPath = path.join(p, name)
+          const fullPath = joinSlash(p, name)
           shouldInsertDir(patternPath, pattern)
           await _glob(fullPath, patternPath, pattern)
         }
