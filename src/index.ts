@@ -46,7 +46,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
   await Promise.all(
     cwds.map(async ([cwd, pattern]) => {
-      await _glob(cwd, '.', pattern)
+      await _glob(cwd, '.', pattern).catch((_err) => {})
     }),
   ).catch((err) => {})
 
@@ -54,27 +54,29 @@ export async function glob(pattern: string | string[], options: Options = {}) {
     if (micromatch.isMatch(p, ignore, { dot })) {
       return
     }
-    const dirs = await fsp.readdir(p, {
-      withFileTypes: true,
-    })
-    await Promise.all(
-      dirs.map(async (dir) => {
-        const name = dir.name
-        if (isIgnoreDot(name)) {
-          return
-        }
-        const patternPath = joinSlash(cwd, name)
-        if (dir.isFile()) {
-          insert(patternPath, pattern, true)
-          return
-        }
-        if (dir.isDirectory() || isIgnoreSymbolicLink(dir)) {
-          const fullPath = joinSlash(p, name)
-          shouldInsertDir(patternPath, pattern)
-          await _glob(fullPath, patternPath, pattern)
-        }
-      }),
-    )
+    try {
+      const dirs = await fsp.readdir(p, {
+        withFileTypes: true,
+      })
+      await Promise.all(
+        dirs.map(async (dir) => {
+          const name = dir.name
+          if (isIgnoreDot(name)) {
+            return
+          }
+          const patternPath = joinSlash(cwd, name)
+          if (dir.isFile()) {
+            insert(patternPath, pattern, true)
+            return
+          }
+          if (dir.isDirectory() || isIgnoreSymbolicLink(dir)) {
+            const fullPath = joinSlash(p, name)
+            shouldInsertDir(patternPath, pattern)
+            await _glob(fullPath, patternPath, pattern).catch((_err) => {})
+          }
+        }),
+      )
+    } catch (error) {}
   }
   if (absolute) {
     const joinCwd = path.join(process.cwd(), root)
