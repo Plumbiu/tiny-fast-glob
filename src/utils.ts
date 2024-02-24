@@ -1,4 +1,4 @@
-import micromatch from 'micromatch'
+import picomatch from 'picomatch'
 
 export interface Pattern {
   base: string
@@ -11,7 +11,7 @@ export type Result = Record<string, Pattern>
 export function createCwds(cwd: string, patterns: string[]) {
   const result: Result = {}
   for (const pattern of patterns) {
-    const { base, glob, prefix } = micromatch.scan(pattern, {
+    const { base, glob, prefix } = picomatch.scan(pattern, {
       unescape: true,
     })
     const key = base ? joinSlash(cwd, base) : cwd
@@ -50,7 +50,7 @@ export function isMatch(
   if (isFile && isSimpleGlob(pattern)) {
     return p.endsWith(pattern.slice(SIMPLE_GLOB_LENGTH))
   }
-  return micromatch.isMatch(p, pattern, {
+  return picomatch.isMatch(p, pattern, {
     dot,
   })
 }

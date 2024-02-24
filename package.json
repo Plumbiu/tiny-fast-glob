@@ -39,12 +39,12 @@
   "author": "Plumbiu",
   "license": "MIT",
   "dependencies": {
-    "micromatch": "^4.0.5"
+    "picomatch": "^4.0.1"
   },
   "devDependencies": {
     "@plumbiu/eslint-config": "^0.2.0",
-    "@types/micromatch": "^4.0.6",
     "@types/node": "^20.0.0",
+    "@types/picomatch": "^2.3.3",
     "eslint": "^8.56.0",
     "fast-glob": "^3.3.2",
     "tsup": "^8.0.1",

@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { Dirent } from 'node:fs'
-import micromatch from 'micromatch'
+import picomatch from 'picomatch'
 import { Pattern, createCwds, isMatch, joinSlash } from './utils'
 
 export interface Options {
@@ -51,7 +51,7 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   ).catch((err) => {})
 
   async function _glob(p: string, cwd: string, pattern: Pattern) {
-    if (micromatch.isMatch(p, ignore, { dot })) {
+    if (picomatch.isMatch(p, ignore, { dot })) {
       return
     }
     try {
