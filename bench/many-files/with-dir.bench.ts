@@ -4,14 +4,12 @@ import { glob as tiny_fast_glob } from '../../src/index'
 
 bench('fast-glob', async () => {
   await fast_glob(['**/*.js', '**/@*'], {
-    absolute: true,
     onlyFiles: false,
   })
 })
 
 bench('tiny-fast-glob', async () => {
   await tiny_fast_glob(['**/*.js', '**/@*'], {
-    absolute: true,
     onlyFiles: false,
   })
 })

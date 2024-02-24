@@ -3,13 +3,9 @@ import { glob as fast_glob } from 'fast-glob'
 import { glob as tiny_fast_glob } from '../../src/index'
 
 bench('fast-glob', async () => {
-  await fast_glob('**/*.js', {
-    absolute: true,
-  })
+  await fast_glob('**/*.js')
 })
 
 bench('tiny-fast-glob', async () => {
-  await tiny_fast_glob('**/*.js', {
-    absolute: true,
-  })
+  await tiny_fast_glob('**/*.js')
 })
