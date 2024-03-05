@@ -38,6 +38,9 @@ export function isSimpleGlob(pattern: string) {
   return true
 }
 
+const COMMON_GLOB_SYMBOLS_RE = /[*?]|^!/
+const REGEX_CHARACTER_CLASS_SYMBOLS_RE = /\[[^[]*]/
+const REGEX_GROUP_SYMBOLS_RE = /(?:^|[^!*+?@])\([^(]*\|[^|]*\)/
 export function isMatch(
   p: string,
   pattern: string,
@@ -48,7 +51,17 @@ export function isMatch(
     return true
   }
   if (isFile && isSimpleGlob(pattern)) {
-    return p.endsWith(pattern.slice(SIMPLE_GLOB_LENGTH))
+    const suffix = pattern.slice(SIMPLE_GLOB_LENGTH)
+    if (
+      COMMON_GLOB_SYMBOLS_RE.test(suffix) ||
+      REGEX_CHARACTER_CLASS_SYMBOLS_RE.test(suffix) ||
+      REGEX_GROUP_SYMBOLS_RE.test(suffix)
+    ) {
+      return picomatch.isMatch(p, pattern, {
+        dot,
+      })
+    }
+    return p.endsWith(suffix)
   }
   return picomatch.isMatch(p, pattern, {
     dot,
