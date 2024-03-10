@@ -51,6 +51,9 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   ).catch((err) => {})
 
   async function _glob(p: string, cwd: string, pattern: Pattern) {
+    if (!isLegalPath(p)) {
+      return
+    }
     if (picomatch.isMatch(p, ignore, { dot })) {
       return
     }
