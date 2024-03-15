@@ -90,6 +90,9 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
 // FIXME: node 20.x do not support unicode
 export function isLegalPath(str: string) {
+  if (process.platform !== 'win32') {
+    return true
+  }
   for (const ch of str) {
     if (ch.length > 1) {
       return false
