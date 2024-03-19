@@ -13,6 +13,8 @@ export interface Options {
   onlyFiles?: boolean
 }
 
+const returnFalse = () => false
+
 export async function glob(pattern: string | string[], options: Options = {}) {
   const {
     cwd: root = '.',
@@ -26,12 +28,12 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   const cwds = Object.entries(
     createCwds(root, typeof pattern === 'string' ? [pattern] : pattern),
   )
-  const isIgnoreDot = dot ? () => false : (name: string) => name[0] === '.'
+  const isIgnoreDot = dot ? returnFalse : (name: string) => name[0] === '.'
   const isIgnoreSymbolicLink = followSymbolicLinks
     ? (item: Dirent) => item.isSymbolicLink()
-    : () => false
+    : returnFalse
   const shouldInsertDir = onlyFiles
-    ? () => false
+    ? returnFalse
     : (p: string, pattern: Pattern) => insert(p, pattern)
 
   function insert(p: string, patterns: Pattern, isFile = false) {
