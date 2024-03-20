@@ -48,9 +48,9 @@ export async function glob(pattern: string | string[], options: Options = {}) {
 
   await Promise.all(
     cwds.map(async ([cwd, pattern]) => {
-      await _glob(cwd, '.', pattern).catch((_err) => {})
+      await _glob(cwd, '', pattern).catch((_err) => {})
     }),
-  ).catch((err) => {})
+  ).catch(() => {})
 
   async function _glob(p: string, cwd: string, pattern: Pattern) {
     if (!isLegalPath(p)) {
@@ -90,9 +90,11 @@ export async function glob(pattern: string | string[], options: Options = {}) {
   return result
 }
 
+const IS_WIN = process.platform === 'win32'
+
 // FIXME: node 20.x do not support unicode
-export function isLegalPath(str: string) {
-  if (process.platform !== 'win32') {
+function isLegalPath(str: string) {
+  if (!IS_WIN) {
     return true
   }
   for (const ch of str) {
